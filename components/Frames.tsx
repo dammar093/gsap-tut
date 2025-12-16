@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { FC, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { heroFrames } from "@/data/hero";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const FRAME_COUNT = heroFrames?.length;
+interface FramesProps {
+  frames: string[];
+}
 
-const Frames = () => {
+const Frames: FC<FramesProps> = ({ frames }) => {
+  const FRAME_COUNT = frames?.length;
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -36,7 +38,7 @@ const Frames = () => {
           Math.min(FRAME_COUNT - 1, Math.round(frameState.frame))
         );
 
-        const src = heroFrames[index];
+        const src = frames[index];
         if (src && imageRef.current) {
           imageRef.current.src = src;
         }
@@ -61,7 +63,7 @@ const Frames = () => {
     >
       <img
         ref={imageRef}
-        src={heroFrames[0]}
+        src={frames[0]}
         alt="Scroll frame animation"
         style={{
           width: "100%",
