@@ -12,16 +12,16 @@ interface FramesProps {
 }
 
 const Frames: FC<FramesProps> = ({ frames }) => {
-  const FRAME_COUNT = frames?.length;
-  const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const FRAME_COUNT = frames.length;
 
   useGSAP(() => {
     if (!containerRef.current || !imageRef.current) return;
 
-    const frameState = { frame: 0 };
+    const state = { frame: 0 };
 
-    const tween = gsap.to(frameState, {
+    const tween = gsap.to(state, {
       frame: FRAME_COUNT - 1,
       snap: "frame",
       ease: "none",
@@ -30,18 +30,15 @@ const Frames: FC<FramesProps> = ({ frames }) => {
         start: "top top",
         end: "bottom bottom",
         scrub: true,
-        pin: true,
+        pin: imageRef.current,
+        pinSpacing: false,
       },
       onUpdate: () => {
-        const index = Math.max(
-          1,
-          Math.min(FRAME_COUNT - 1, Math.round(frameState.frame))
+        const i = Math.max(
+          0,
+          Math.min(FRAME_COUNT - 1, Math.round(state.frame))
         );
-
-        const src = frames[index];
-        if (src && imageRef.current) {
-          imageRef.current.src = src;
-        }
+        imageRef.current!.src = frames[i];
       },
     });
 
@@ -49,26 +46,28 @@ const Frames: FC<FramesProps> = ({ frames }) => {
       tween.scrollTrigger?.kill();
       tween.kill();
     };
-  }, []);
+  }, [frames]);
 
   return (
     <div
       ref={containerRef}
       style={{
-        height: "150vh",
-        backgroundColor: "#000",
-        display: "flex",
-        justifyContent: "center",
+        position: "absolute",
+        inset: 0,
+        zIndex: 0,
       }}
     >
       <img
         ref={imageRef}
         src={frames[0]}
-        alt="Scroll frame animation"
+        alt="Frame background"
         style={{
+          position: "fixed",
+          inset: 0,
           width: "100%",
           height: "100vh",
           objectFit: "cover",
+          pointerEvents: "none",
         }}
         draggable={false}
       />
